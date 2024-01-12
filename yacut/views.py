@@ -4,13 +4,13 @@ from urllib.parse import urljoin
 from flask import abort, flash, redirect, render_template, request
 
 from yacut import app, db
-from yacut.core import get_unique_short_id
+from yacut.core import get_unique_short_id, HTTPMethod
 from yacut.forms import URLMapForm
 from yacut.models import URLMap
 from yacut.settings import SHORT_LINK_EXIST
 
 
-@app.route('/', methods=('GET', 'POST'))
+@app.route('/', methods=(HTTPMethod.GET, HTTPMethod.POST))
 def index_view():
     TEMPLATE = 'index.html'
     form = URLMapForm()
@@ -41,7 +41,7 @@ def index_view():
     return render_template(TEMPLATE, form=form)
 
 
-@app.route('/<string:link>', methods=('GET', ))
+@app.route('/<string:link>', methods=(HTTPMethod.GET, ))
 def redirect_view(link=None):
     urlmap = URLMap.query.filter_by(short=link).first()
     if urlmap:

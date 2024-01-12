@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 from flask import jsonify, request
 
 from yacut import app, db
-from yacut.core import get_unique_short_id
+from yacut.core import get_unique_short_id, HTTPMethod
 from yacut.error_handlers import InvalidAPIUsage
 from yacut.models import URLMap
 from yacut.settings import (
@@ -14,7 +14,7 @@ from yacut.settings import (
 )
 
 
-@app.route('/api/id/<string:short_id>/', methods=('GET', ))
+@app.route('/api/id/<string:short_id>/', methods=(HTTPMethod.GET, ))
 def get_original_link(short_id):
     urlmap = URLMap.query.filter_by(short=short_id).first()
     if urlmap is None:
@@ -22,7 +22,7 @@ def get_original_link(short_id):
     return jsonify({'url': urlmap.original}), HTTPStatus.OK
 
 
-@app.route('/api/id/', methods=('POST', ))
+@app.route('/api/id/', methods=(HTTPMethod.POST, ))
 def create_short_link():
     data = request.get_json()
     if not data:
@@ -43,9 +43,9 @@ def create_short_link():
         while URLMap.query.filter_by(short=custom_id).first():
             custom_id = get_unique_short_id()
     data['custom_id'] = custom_id
-    urlmap = URLMap()
-    if URLMap.query.filter_by(original=url).first() is not None:
-        urlmap = URLMap.query.filter_by(original=url).first()
+    urlmap = URLMap.query.filter_by(original=url).first()
+    if urlmap is None:
+        urlmap = URLMap()
     urlmap.from_dict(data)
     db.session.add(urlmap)
     db.session.commit()

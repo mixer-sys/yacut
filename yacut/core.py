@@ -1,7 +1,7 @@
 import string
 import random
 
-from settings import RANDOM_STRING_LEN
+from yacut.settings import RANDOM_STRING_LEN
 
 
 def get_unique_short_id():

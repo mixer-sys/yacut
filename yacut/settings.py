@@ -1,6 +1,5 @@
 import os
 
-
 ID_NOT_FOUND = 'Указанный id не найден'
 BODY_IS_NONE = 'Отсутствует тело запроса'
 URL_REQUIRED = '"url" является обязательным полем!'
@@ -9,6 +8,8 @@ BAD_SHORT_LINK = 'Указано недопустимое имя для коро
 CUSTOM_ID_MIN_LEN = 2
 CUSTOM_ID_MAX_LEN = 16
 RANDOM_STRING_LEN = 6
+ORIGINAL_LINK_MIN_LEN = 1
+ORIGINAL_LINK_MAX_LEN = 256
 
 
 class Config(object):

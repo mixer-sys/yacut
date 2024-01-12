@@ -1,27 +1,28 @@
+from http import HTTPStatus
 from urllib.parse import urljoin
 
 from flask import jsonify, request
 
-from settings import (
-    BAD_SHORT_LINK, BODY_IS_NONE,
-    CUSTOM_ID_MAX_LEN, CUSTOM_ID_MIN_LEN,
-    ID_NOT_FOUND, SHORT_LINK_EXIST, URL_REQUIRED
-)
 from yacut import app, db
 from yacut.core import get_unique_short_id
 from yacut.error_handlers import InvalidAPIUsage
 from yacut.models import URLMap
+from yacut.settings import (
+    BAD_SHORT_LINK, BODY_IS_NONE,
+    CUSTOM_ID_MAX_LEN, CUSTOM_ID_MIN_LEN,
+    ID_NOT_FOUND, SHORT_LINK_EXIST, URL_REQUIRED
+)
 
 
-@app.route('/api/id/<string:short_id>/', methods=['GET'])
+@app.route('/api/id/<string:short_id>/', methods=('GET', ))
 def get_original_link(short_id):
     urlmap = URLMap.query.filter_by(short=short_id).first()
     if urlmap is None:
-        raise InvalidAPIUsage(ID_NOT_FOUND, 404)
-    return jsonify({'url': urlmap.original}), 200
+        raise InvalidAPIUsage(ID_NOT_FOUND, HTTPStatus.NOT_FOUND)
+    return jsonify({'url': urlmap.original}), HTTPStatus.OK
 
 
-@app.route('/api/id/', methods=['POST'])
+@app.route('/api/id/', methods=('POST', ))
 def create_short_link():
     data = request.get_json()
     if not data:
@@ -50,4 +51,4 @@ def create_short_link():
     db.session.commit()
     response = urlmap.to_dict()
     response['short_link'] = urljoin(request.host_url, response.get('short_link'))
-    return jsonify(response), 201
+    return jsonify(response), HTTPStatus.CREATED

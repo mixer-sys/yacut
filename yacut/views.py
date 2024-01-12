@@ -1,15 +1,16 @@
+from http import HTTPStatus
 from urllib.parse import urljoin
 
-from flask import abort, flash, render_template, redirect, request
+from flask import abort, flash, redirect, render_template, request
 
-from settings import SHORT_LINK_EXIST
 from yacut import app, db
+from yacut.core import get_unique_short_id
 from yacut.forms import URLMapForm
 from yacut.models import URLMap
-from yacut.core import get_unique_short_id
+from yacut.settings import SHORT_LINK_EXIST
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=('GET', 'POST'))
 def index_view():
     TEMPLATE = 'index.html'
     form = URLMapForm()
@@ -17,7 +18,7 @@ def index_view():
     if form.validate_on_submit():
         original_link = form.original_link.data
         custom_id = form.custom_id.data
-        print(original_link, custom_id)
+
         if URLMap.query.filter_by(short=custom_id).first():
             flash(SHORT_LINK_EXIST)
             return render_template(TEMPLATE, form=form)
@@ -35,10 +36,10 @@ def index_view():
     return render_template(TEMPLATE, form=form)
 
 
-@app.route('/<string:link>', methods=['GET'])
+@app.route('/<string:link>', methods=('GET', ))
 def redirect_view(link=None):
     urlmap = URLMap.query.filter_by(short=link).first()
     if urlmap:
         original_link = urlmap.original
         return redirect(original_link)
-    abort(404)
+    abort(HTTPStatus.NOT_FOUND)

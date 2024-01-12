@@ -15,24 +15,29 @@ def index_view():
     TEMPLATE = 'index.html'
     form = URLMapForm()
     form.message = None
-    if form.validate_on_submit():
-        original_link = form.original_link.data
-        custom_id = form.custom_id.data
 
-        if URLMap.query.filter_by(short=custom_id).first():
-            flash(SHORT_LINK_EXIST)
-            return render_template(TEMPLATE, form=form)
-        if not custom_id:
+    if not form.validate_on_submit():
+        return render_template(TEMPLATE, form=form)
+
+    original_link = form.original_link.data
+    custom_id = form.custom_id.data
+
+    if URLMap.query.filter_by(short=custom_id).first():
+        flash(SHORT_LINK_EXIST)
+        return render_template(TEMPLATE, form=form)
+
+    if not custom_id:
+        custom_id = get_unique_short_id()
+        while URLMap.query.filter_by(short=custom_id).first():
             custom_id = get_unique_short_id()
-            while URLMap.query.filter_by(short=custom_id).first():
-                custom_id = get_unique_short_id()
-        urlmap = URLMap(
-            original=original_link,
-            short=custom_id
-        )
-        db.session.add(urlmap)
-        db.session.commit()
-        form.message = urljoin(request.base_url, custom_id)
+
+    urlmap = URLMap(
+        original=original_link,
+        short=custom_id
+    )
+    db.session.add(urlmap)
+    db.session.commit()
+    form.message = urljoin(request.base_url, custom_id)
     return render_template(TEMPLATE, form=form)
 
 

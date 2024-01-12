@@ -5,6 +5,7 @@ BODY_IS_NONE = 'Отсутствует тело запроса'
 URL_REQUIRED = '"url" является обязательным полем!'
 SHORT_LINK_EXIST = 'Предложенный вариант короткой ссылки уже существует.'
 BAD_SHORT_LINK = 'Указано недопустимое имя для короткой ссылки'
+VALIDATOR_MESSAGE = 'Обязательное поле'
 CUSTOM_ID_MIN_LEN = 2
 CUSTOM_ID_MAX_LEN = 16
 RANDOM_STRING_LEN = 6

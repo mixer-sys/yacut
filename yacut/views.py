@@ -31,10 +31,12 @@ def index_view():
         while URLMap.query.filter_by(short=custom_id).first():
             custom_id = get_unique_short_id()
 
-    urlmap = URLMap(
-        original=original_link,
-        short=custom_id
-    )
+    urlmap = URLMap.query.filter_by(original=original_link).first()
+    if urlmap is None:
+        urlmap = URLMap(
+            original=original_link,
+            short=custom_id
+        )
     db.session.add(urlmap)
     db.session.commit()
     form.message = urljoin(request.base_url, custom_id)
